@@ -64,7 +64,7 @@ services/api/
 - **No raw dicts at boundaries**: All data crossing layer boundaries uses typed Pydantic models.
 - **No mutable globals**: Configuration is read-only after init. No module-level mutable state shared between layers.
 - **Validated inputs**: All HTTP inputs validated by FastAPI/Pydantic. Audio asset keys validated against `^audio/[A-Za-z0-9_][A-Za-z0-9_./\-]*\.(wav|mp3|flac|ogg|m4a|aac|opus)$` (case-insensitive) with explicit `..` / `//` rejection before any B2 call. The pattern accepts both the Upload pipeline's canonical `audio/<YYYY>/<MM>/<safe-filename>--<uuid>.<ext>` shape and externally-seeded audio under `audio/`.
-- **Custom user agent**: every `boto3.client("s3", …)` sets `Config(user_agent_extra="b2ai-ai-audio-starter-kit")`. No `b2-native` calls.
+- **Custom user agent**: every `boto3.client("s3", …)` sets `Config(user_agent_extra="b2ai-ai-audio-starter-kit (backblaze-b2-samples)")`. No native B2 API calls.
 
 ## Deployment
 

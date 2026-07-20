@@ -120,12 +120,11 @@ cp .env.example .env
 
 Open `.env` in your editor and keep it visible. Then head to the [Backblaze B2 dashboard](https://secure.backblaze.com/b2_buckets.htm?utm_source=github&utm_medium=referral&utm_campaign=ai_artifacts&utm_content=b2ai-ai-audio-starter-kit) and:
 
-1. **Create a bucket.** B2 will show three values — paste each into `.env`:
+1. **Create a bucket.** Use the bucket name and endpoint to fill these `.env` values:
    - **Bucket Unique Name** -> `B2_BUCKET_NAME`
-   - **Endpoint** -> `B2_ENDPOINT`
    - **Region** (the path segment of the endpoint, e.g. `us-west-004`) -> `B2_REGION`
 2. **Create an application key** with `Read and Write` permission. B2 will show two values — paste each into `.env`:
-   - **keyID** -> `B2_KEY_ID`
+   - **keyID** -> `B2_APPLICATION_KEY_ID`
    - **applicationKey** -> `B2_APPLICATION_KEY` *(only shown once — paste it now)*
 
 > Want a walkthrough? See the docs for [creating a bucket](https://www.backblaze.com/docs/cloud-storage-create-and-manage-buckets?utm_source=github&utm_medium=referral&utm_campaign=ai_artifacts&utm_content=b2ai-ai-audio-starter-kit) and [creating app keys](https://www.backblaze.com/docs/cloud-storage-create-and-manage-app-keys?utm_source=github&utm_medium=referral&utm_campaign=ai_artifacts&utm_content=b2ai-ai-audio-starter-kit).
