@@ -37,14 +37,22 @@ async def list_files_endpoint(prefix: str = "", limit: int = 100):
 
 @router.get("/files/stats", response_model=UploadStats)
 async def stats_endpoint():
-    return get_stats()
+    try:
+        return get_stats()
+    except RuntimeError:
+        logger.exception("Failed to load file stats")
+        raise HTTPException(status_code=500, detail="Failed to load file stats") from None
 
 
 @router.get("/files/stats/activity", response_model=list[DailyUploadCount])
 async def upload_activity_endpoint(days: int = 7):
     if days < 1 or days > 90:
         raise HTTPException(status_code=400, detail="Days must be between 1 and 90")
-    return get_upload_activity(days=days)
+    try:
+        return get_upload_activity(days=days)
+    except RuntimeError:
+        logger.exception("Failed to load upload activity")
+        raise HTTPException(status_code=500, detail="Failed to load upload activity") from None
 
 
 @router.post("/files/bulk-delete")

@@ -24,7 +24,7 @@ async def test_unhandled_exception_returns_500(client, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_stats_b2_failure_returns_500(client, monkeypatch):
-    """Stats endpoint returns 500 when B2 is unreachable."""
+    """Stats endpoint handles B2 failures without leaking raw details."""
 
     def explode():
         raise RuntimeError("B2 stats query failed")
@@ -33,7 +33,21 @@ async def test_stats_b2_failure_returns_500(client, monkeypatch):
 
     response = await client.get("/files/stats")
     assert response.status_code == 500
-    assert response.json()["detail"] == "Internal server error"
+    assert response.json()["detail"] == "Failed to load file stats"
+
+
+@pytest.mark.asyncio
+async def test_upload_activity_b2_failure_returns_500(client, monkeypatch):
+    """Upload activity endpoint handles B2 failures without leaking raw details."""
+
+    def explode(max_keys):
+        raise RuntimeError("B2 activity query failed")
+
+    monkeypatch.setattr(files_service, "list_audio_objects", explode)
+
+    response = await client.get("/files/stats/activity?days=7")
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Failed to load upload activity"
 
 
 @pytest.mark.asyncio
