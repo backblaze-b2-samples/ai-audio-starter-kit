@@ -3,7 +3,9 @@ from pydantic_settings import BaseSettings
 
 from app.config.b2_contract import (
     LEGACY_B2_KEY_ID_ENV,
+    LEGACY_B2_PUBLIC_URL_ENV,
     PRIMARY_B2_KEY_ID_ENV,
+    PRIMARY_B2_PUBLIC_URL_ENV,
     b2_endpoint_url_from_region,
 )
 
@@ -19,7 +21,13 @@ class Settings(BaseSettings):
     )
     b2_application_key: str = ""
     b2_bucket_name: str = ""
-    b2_public_url_base: str = ""
+    b2_public_url_base: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            PRIMARY_B2_PUBLIC_URL_ENV,
+            LEGACY_B2_PUBLIC_URL_ENV,
+        ),
+    )
 
     api_port: int = 8000
     # Explicit allowlist by default — covers Next on :3000 and the

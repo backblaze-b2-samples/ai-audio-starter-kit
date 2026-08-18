@@ -24,7 +24,7 @@ Set these on the API service:
 
 | Variable | Value |
 |----------|-------|
-| `B2_REGION` | Your B2 region (the path segment of the endpoint, e.g. `us-west-004`) |
+| `B2_REGION` | Region token from the S3 endpoint hostname, e.g. `us-west-004` from `s3.us-west-004.backblazeb2.com` |
 | `B2_APPLICATION_KEY_ID` | Your B2 key ID |
 | `B2_APPLICATION_KEY` | Your B2 key |
 | `B2_BUCKET_NAME` | Your bucket name |

@@ -14,6 +14,7 @@ B2_ENV_NAMES = (
     "B2_BUCKET_NAME",
     "B2_REGION",
     "B2_PUBLIC_URL_BASE",
+    "B2_PUBLIC_URL",
 )
 
 
@@ -86,6 +87,34 @@ def test_settings_prefer_new_key_id_env(monkeypatch):
     )
 
     assert settings.b2_application_key_id == "new-key-id"
+
+
+def test_settings_accept_new_public_url_base_env(monkeypatch):
+    settings = _settings_from_env(
+        monkeypatch,
+        B2_PUBLIC_URL_BASE="https://cdn.example.com/bucket",
+    )
+
+    assert settings.b2_public_url_base == "https://cdn.example.com/bucket"
+
+
+def test_settings_accept_legacy_public_url_env(monkeypatch):
+    settings = _settings_from_env(
+        monkeypatch,
+        B2_PUBLIC_URL="https://legacy.example.com/bucket",
+    )
+
+    assert settings.b2_public_url_base == "https://legacy.example.com/bucket"
+
+
+def test_settings_prefer_new_public_url_base_env(monkeypatch):
+    settings = _settings_from_env(
+        monkeypatch,
+        B2_PUBLIC_URL_BASE="https://cdn.example.com/bucket",
+        B2_PUBLIC_URL="https://legacy.example.com/bucket",
+    )
+
+    assert settings.b2_public_url_base == "https://cdn.example.com/bucket"
 
 
 @pytest.mark.asyncio
