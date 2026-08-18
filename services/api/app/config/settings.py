@@ -1,9 +1,22 @@
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings
+
+from app.config.b2_contract import (
+    LEGACY_B2_KEY_ID_ENV,
+    PRIMARY_B2_KEY_ID_ENV,
+    b2_endpoint_url_from_region,
+)
 
 
 class Settings(BaseSettings):
     b2_region: str = ""
-    b2_application_key_id: str = ""
+    b2_application_key_id: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            PRIMARY_B2_KEY_ID_ENV,
+            LEGACY_B2_KEY_ID_ENV,
+        ),
+    )
     b2_application_key: str = ""
     b2_bucket_name: str = ""
     b2_public_url_base: str = ""
@@ -30,13 +43,12 @@ class Settings(BaseSettings):
         "env_file": ".env",
         "env_file_encoding": "utf-8",
         "extra": "ignore",
+        "populate_by_name": True,
     }
 
     @property
     def b2_endpoint_url(self) -> str:
-        if not self.b2_region:
-            return ""
-        return f"https://s3.{self.b2_region}.backblazeb2.com"
+        return b2_endpoint_url_from_region(self.b2_region)
 
     @property
     def cors_origins(self) -> list[str]:

@@ -9,6 +9,7 @@ from botocore.config import Config
 from botocore.exceptions import ClientError
 
 from app.config import settings
+from app.config.b2_contract import B2_USER_AGENT_EXTRA
 from app.types import FileMetadata
 from app.types.formatting import humanize_bytes
 
@@ -43,7 +44,7 @@ def get_s3_client():
         aws_secret_access_key=settings.b2_application_key,
         config=Config(
             signature_version="s3v4",
-            user_agent_extra="b2ai-ai-audio-starter-kit (backblaze-b2-samples)",
+            user_agent_extra=B2_USER_AGENT_EXTRA,
         ),
     )
 

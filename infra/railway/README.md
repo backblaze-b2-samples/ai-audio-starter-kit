@@ -36,3 +36,7 @@ Set this on the Web service:
 | Variable | Value |
 |----------|-------|
 | `NEXT_PUBLIC_API_URL` | Your API service URL (e.g., `https://api-production-xxx.up.railway.app`) |
+
+For rolling deploys from older versions, add `B2_APPLICATION_KEY_ID` with
+the same value as legacy `B2_KEY_ID` before deploying this version. Remove
+`B2_KEY_ID` only after all old API instances have been replaced.

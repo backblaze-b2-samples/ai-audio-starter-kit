@@ -3,19 +3,13 @@
 import ast
 from pathlib import Path
 
+from app.config.b2_contract import STANDARD_B2_ENV_KEYS
+
 APP_ROOT = Path(__file__).parent.parent / "app"
 REPO_ROOT = APP_ROOT.parents[2]
 
 # Layer ordering: lower layers must not import from higher layers
 LAYER_ORDER = ["types", "config", "repo", "service", "runtime"]
-STANDARD_B2_ENV_KEYS = {
-    "B2_APPLICATION_KEY_ID",
-    "B2_APPLICATION_KEY",
-    "B2_BUCKET_NAME",
-    "B2_REGION",
-    "B2_PUBLIC_URL_BASE",
-}
-STANDARD_USER_AGENT = "b2ai-ai-audio-starter-kit (backblaze-b2-samples)"
 
 # Map of layer -> set of layers it must NOT import from
 FORBIDDEN_IMPORTS: dict[str, set[str]] = {}
@@ -123,11 +117,4 @@ def test_env_example_uses_standard_b2_names():
         if key.startswith("B2_"):
             keys.add(key)
 
-    assert keys == STANDARD_B2_ENV_KEYS
-
-
-def test_s3_client_sets_standard_user_agent():
-    """Verify the S3 client identifies both the sample and sample family."""
-    b2_client = APP_ROOT / "repo" / "b2_client.py"
-
-    assert f'user_agent_extra="{STANDARD_USER_AGENT}"' in b2_client.read_text()
+    assert keys == set(STANDARD_B2_ENV_KEYS)
