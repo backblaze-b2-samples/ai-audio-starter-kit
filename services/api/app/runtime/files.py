@@ -36,7 +36,7 @@ async def list_files_endpoint(prefix: str = "", limit: int = 100):
 
 
 @router.get("/files/stats", response_model=UploadStats)
-async def stats_endpoint():
+def stats_endpoint():
     try:
         return get_stats()
     except RuntimeError:
@@ -45,7 +45,7 @@ async def stats_endpoint():
 
 
 @router.get("/files/stats/activity", response_model=list[DailyUploadCount])
-async def upload_activity_endpoint(days: int = 7):
+def upload_activity_endpoint(days: int = 7):
     if days < 1 or days > 90:
         raise HTTPException(status_code=400, detail="Days must be between 1 and 90")
     try:

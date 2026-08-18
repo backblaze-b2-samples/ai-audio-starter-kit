@@ -1,7 +1,10 @@
 """Tests for error handling across the API."""
 
+import inspect
+
 import pytest
 
+from app.runtime import files as files_runtime
 from app.service import files as files_service
 
 
@@ -29,7 +32,7 @@ async def test_stats_b2_failure_returns_500(client, monkeypatch):
     def explode():
         raise RuntimeError("B2 stats query failed")
 
-    monkeypatch.setattr(files_service, "get_upload_stats", explode)
+    monkeypatch.setattr(files_runtime, "get_stats", explode)
 
     response = await client.get("/files/stats")
     assert response.status_code == 500
@@ -40,14 +43,20 @@ async def test_stats_b2_failure_returns_500(client, monkeypatch):
 async def test_upload_activity_b2_failure_returns_500(client, monkeypatch):
     """Upload activity endpoint handles B2 failures without leaking raw details."""
 
-    def explode(max_keys):
+    def explode(days):
         raise RuntimeError("B2 activity query failed")
 
-    monkeypatch.setattr(files_service, "list_audio_objects", explode)
+    monkeypatch.setattr(files_runtime, "get_upload_activity", explode)
 
     response = await client.get("/files/stats/activity?days=7")
     assert response.status_code == 500
     assert response.json()["detail"] == "Failed to load upload activity"
+
+
+def test_stats_handlers_are_sync_for_threadpool():
+    """FastAPI runs sync stats handlers in its threadpool."""
+    assert not inspect.iscoroutinefunction(files_runtime.stats_endpoint)
+    assert not inspect.iscoroutinefunction(files_runtime.upload_activity_endpoint)
 
 
 @pytest.mark.asyncio
