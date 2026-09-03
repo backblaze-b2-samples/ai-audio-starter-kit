@@ -41,6 +41,8 @@ The scaffold currently reports `0` for `total_duration_ms`. Per-asset duration i
 
 ## Edge Cases
 - API unavailable -> stats default to zeros, table shows empty state
+- B2 stats aggregation fails -> `/files/stats` returns 500 with `Failed to load file stats`
+- B2 activity aggregation fails -> `/files/stats/activity` returns 500 with `Failed to load upload activity`
 - No files uploaded -> empty chart message, empty table message
 - Large file count -> stats endpoint paginates through all objects using `ContinuationToken`
 
