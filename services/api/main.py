@@ -18,6 +18,13 @@ from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from starlette.middleware.base import BaseHTTPMiddleware  # noqa: E402
 
 from app.config import settings  # noqa: E402
+from app.config.b2_contract import (  # noqa: E402
+    B2_PLACEHOLDER_VALUES,
+    LEGACY_B2_KEY_ID_ENV,
+    PRIMARY_B2_KEY_ID_ENV,
+    REQUIRED_B2_ENV_NAMES,
+    validate_b2_region,
+)
 from app.runtime import files, health, library, metrics, upload  # noqa: E402
 
 # --- Startup validation ---
@@ -27,33 +34,35 @@ from app.runtime import files, health, library, metrics, upload  # noqa: E402
 # with a human-readable message — uvicorn surfaces this as the first log
 # line, so misconfiguration is obvious within seconds rather than turning
 # into mysterious 500s on the first request.
-REQUIRED_B2_SETTINGS = (
-    ("b2_key_id", "B2_KEY_ID"),
-    ("b2_application_key", "B2_APPLICATION_KEY"),
-    ("b2_bucket_name", "B2_BUCKET_NAME"),
-    ("b2_endpoint", "B2_ENDPOINT"),
-    ("b2_region", "B2_REGION"),
-)
+_ENV_TO_SETTINGS_ATTR = {
+    "B2_APPLICATION_KEY_ID": "b2_application_key_id",
+    "B2_APPLICATION_KEY": "b2_application_key",
+    "B2_BUCKET_NAME": "b2_bucket_name",
+    "B2_REGION": "b2_region",
+}
 
-# Exact placeholder strings shipped in .env.example. If a user copied
-# the example and didn't edit it, Settings will pass the "non-empty"
-# check above but every B2 call will still 403. Catch that here.
-PLACEHOLDER_VALUES = frozenset({
-    "your_b2_endpoint",
-    "your_b2_region",
-    "your_key_id",
-    "your_application_key",
-    "your-bucket-name",
-})
+
+def _key_id_env_label() -> str:
+    return f"{PRIMARY_B2_KEY_ID_ENV} (or legacy {LEGACY_B2_KEY_ID_ENV})"
+
+
+def _required_b2_settings() -> tuple[tuple[str, str], ...]:
+    return tuple(
+        (env_name, _ENV_TO_SETTINGS_ATTR[env_name])
+        for env_name in REQUIRED_B2_ENV_NAMES
+        if env_name != PRIMARY_B2_KEY_ID_ENV
+    )
 
 
 @asynccontextmanager
 async def lifespan(_app: "FastAPI"):
     missing = [
         env_name
-        for attr, env_name in REQUIRED_B2_SETTINGS
+        for env_name, attr in _required_b2_settings()
         if not getattr(settings, attr)
     ]
+    if not settings.b2_application_key_id:
+        missing.insert(0, _key_id_env_label())
     if missing:
         raise RuntimeError(
             "Missing required B2 configuration: "
@@ -63,15 +72,21 @@ async def lifespan(_app: "FastAPI"):
 
     placeholders = [
         env_name
-        for attr, env_name in REQUIRED_B2_SETTINGS
-        if getattr(settings, attr) in PLACEHOLDER_VALUES
+        for env_name, attr in _required_b2_settings()
+        if getattr(settings, attr) in B2_PLACEHOLDER_VALUES
     ]
+    if settings.b2_application_key_id in B2_PLACEHOLDER_VALUES:
+        placeholders.insert(0, _key_id_env_label())
     if placeholders:
         raise RuntimeError(
             "B2 configuration still has placeholder values: "
             + ", ".join(placeholders)
             + f". Edit {REPO_ROOT_ENV} with your real B2 credentials and restart."
         )
+    try:
+        validate_b2_region(settings.b2_region)
+    except ValueError as exc:
+        raise RuntimeError(str(exc)) from exc
     yield
 
 # --- Structured JSON logging ---

@@ -1,13 +1,33 @@
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings
+
+from app.config.b2_contract import (
+    LEGACY_B2_KEY_ID_ENV,
+    LEGACY_B2_PUBLIC_URL_ENV,
+    PRIMARY_B2_KEY_ID_ENV,
+    PRIMARY_B2_PUBLIC_URL_ENV,
+    b2_endpoint_url_from_region,
+)
 
 
 class Settings(BaseSettings):
-    b2_endpoint: str = ""
     b2_region: str = ""
-    b2_key_id: str = ""
+    b2_application_key_id: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            PRIMARY_B2_KEY_ID_ENV,
+            LEGACY_B2_KEY_ID_ENV,
+        ),
+    )
     b2_application_key: str = ""
     b2_bucket_name: str = ""
-    b2_public_url: str = ""
+    b2_public_url_base: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            PRIMARY_B2_PUBLIC_URL_ENV,
+            LEGACY_B2_PUBLIC_URL_ENV,
+        ),
+    )
 
     api_port: int = 8000
     # Explicit allowlist by default — covers Next on :3000 and the
@@ -27,7 +47,16 @@ class Settings(BaseSettings):
     # volume in production if you care about surviving restarts.
     download_count_file: str = "data/download_count.json"
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "extra": "ignore",
+        "populate_by_name": True,
+    }
+
+    @property
+    def b2_endpoint_url(self) -> str:
+        return b2_endpoint_url_from_region(self.b2_region)
 
     @property
     def cors_origins(self) -> list[str]:

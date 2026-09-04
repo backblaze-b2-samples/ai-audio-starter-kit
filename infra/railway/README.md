@@ -24,11 +24,11 @@ Set these on the API service:
 
 | Variable | Value |
 |----------|-------|
-| `B2_ENDPOINT` | Your B2 S3 endpoint |
-| `B2_REGION` | Your B2 region (the path segment of the endpoint, e.g. `us-west-004`) |
-| `B2_KEY_ID` | Your B2 key ID |
+| `B2_REGION` | Region token from the S3 endpoint hostname, e.g. `us-west-004` from `s3.us-west-004.backblazeb2.com` |
+| `B2_APPLICATION_KEY_ID` | Your B2 key ID |
 | `B2_APPLICATION_KEY` | Your B2 key |
 | `B2_BUCKET_NAME` | Your bucket name |
+| `B2_PUBLIC_URL_BASE` | Optional public bucket or CDN base URL |
 | `API_CORS_ORIGINS` | Your web service URL (e.g., `https://web-production-xxx.up.railway.app`) |
 
 Set this on the Web service:
@@ -36,3 +36,7 @@ Set this on the Web service:
 | Variable | Value |
 |----------|-------|
 | `NEXT_PUBLIC_API_URL` | Your API service URL (e.g., `https://api-production-xxx.up.railway.app`) |
+
+For rolling deploys from older versions, add `B2_APPLICATION_KEY_ID` with
+the same value as legacy `B2_KEY_ID` before deploying this version. Remove
+`B2_KEY_ID` only after all old API instances have been replaced.

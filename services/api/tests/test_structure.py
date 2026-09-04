@@ -3,7 +3,10 @@
 import ast
 from pathlib import Path
 
+from app.config.b2_contract import STANDARD_B2_ENV_KEYS
+
 APP_ROOT = Path(__file__).parent.parent / "app"
+REPO_ROOT = APP_ROOT.parents[2]
 
 # Layer ordering: lower layers must not import from higher layers
 LAYER_ORDER = ["types", "config", "repo", "service", "runtime"]
@@ -100,3 +103,18 @@ def test_all_layers_exist():
         assert layer_dir.exists(), f"Missing layer directory: app/{layer}/"
         init_file = layer_dir / "__init__.py"
         assert init_file.exists(), f"Missing __init__.py in app/{layer}/"
+
+
+def test_env_example_uses_standard_b2_names():
+    """Verify the sample declares only the standardized B2 environment names."""
+    env_example = REPO_ROOT / ".env.example"
+    keys = set()
+    for raw in env_example.read_text().splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key = line.split("=", 1)[0]
+        if key.startswith("B2_"):
+            keys.add(key)
+
+    assert keys == set(STANDARD_B2_ENV_KEYS)

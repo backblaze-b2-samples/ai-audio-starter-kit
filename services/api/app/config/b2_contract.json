@@ -1,0 +1,28 @@
+{
+  "standard_env_keys": [
+    "B2_APPLICATION_KEY_ID",
+    "B2_APPLICATION_KEY",
+    "B2_BUCKET_NAME",
+    "B2_REGION",
+    "B2_PUBLIC_URL_BASE"
+  ],
+  "required_env": [
+    "B2_APPLICATION_KEY_ID",
+    "B2_APPLICATION_KEY",
+    "B2_BUCKET_NAME",
+    "B2_REGION"
+  ],
+  "primary_key_id_env": "B2_APPLICATION_KEY_ID",
+  "legacy_key_id_env": "B2_KEY_ID",
+  "primary_public_url_env": "B2_PUBLIC_URL_BASE",
+  "legacy_public_url_env": "B2_PUBLIC_URL",
+  "placeholders": {
+    "B2_APPLICATION_KEY_ID": "your_application_key_id",
+    "B2_KEY_ID": "your_key_id",
+    "B2_APPLICATION_KEY": "your_application_key",
+    "B2_BUCKET_NAME": "your-bucket-name",
+    "B2_REGION": "your_b2_region"
+  },
+  "region_pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*-[0-9]{3}$",
+  "user_agent_extra": "b2ai-ai-audio-starter-kit (backblaze-b2-samples)"
+}

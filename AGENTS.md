@@ -41,7 +41,7 @@ infra/railway/                             Deployment config
 
 **Audio storage convention**: the Upload pipeline writes audio assets to `audio/<YYYY>/<MM>/<safe-filename>--<uuid>.<ext>` — the `--<uuid>` suffix keeps keys collision-proof while leading with the filename keeps keys scannable in the bucket and surfaces the filename in list responses (no per-asset HEAD) and downloads. Non-audio uploads land at `uploads/<safe-filename>` and only show in Files. The Library lists everything under the `audio/` prefix that ends in a supported extension (wav, mp3, flac, ogg, m4a, aac, opus) — files seeded into the bucket outside the Upload pipeline (B2 console, earlier sample, direct sync) stay playable; those without the `--<uuid>` suffix are shown by their last path segment (see `service/library.py::_filename_from_key`). Path-traversal payloads (`..`, `//`) are rejected at the API boundary by `service/library.py::AUDIO_KEY_RE`.
 
-**B2 surface**: S3-only. No `b2-native` calls anywhere. Every `boto3.client("s3", …)` instantiation MUST pass `Config(user_agent_extra="b2ai-ai-audio-starter-kit")`. No hardcoded region strings in source (use `B2_REGION` from `.env`).
+**B2 surface**: S3-only. No native B2 API calls anywhere. Every `boto3.client("s3", …)` instantiation MUST pass `Config(user_agent_extra="b2ai-ai-audio-starter-kit (backblaze-b2-samples)")`. No hardcoded region strings in source (use `B2_REGION` from `.env`).
 
 ## 3. Quality Expectations
 

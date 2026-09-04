@@ -6,8 +6,12 @@ Security principles and implementation for the ai-audio-starter-kit.
 ## Trust Boundaries
 
 - **Frontend -> API**: CORS-restricted to configured origins, scoped to `GET/POST/DELETE/OPTIONS`
-- **API -> B2**: Authenticated via `B2_KEY_ID` + `B2_APPLICATION_KEY`, signature v4
+- **API -> B2**: Authenticated via `B2_APPLICATION_KEY_ID` + `B2_APPLICATION_KEY`, signature v4
 - **Client -> B2**: Presigned URLs for download (10-min expiry, `Content-Disposition: attachment`)
+
+During the migration from older deployments, the API also accepts legacy
+`B2_KEY_ID` as the key ID source. Prefer `B2_APPLICATION_KEY_ID` for all new
+configuration and remove `B2_KEY_ID` after old instances are gone.
 
 ## Upload Validation
 
